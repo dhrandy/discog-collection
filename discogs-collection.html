@@ -6,67 +6,59 @@
   <title>Discogs Collection Viewer</title>
   <style>
     * { box-sizing: border-box; }
-
-    body {
-      background: #111;
-      color: #eee;
-      font-family: system-ui, sans-serif;
-      margin: 0;
-      padding: 12px 10px;
-    }
+    body { background: #111; color: #eee; font-family: system-ui, sans-serif; margin: 0; padding: 12px 10px; }
     @media (min-width: 600px) { body { padding: 20px; } }
 
-    h1 { margin-top: 0; margin-bottom: 10px; font-weight: 700; font-size: clamp(1.1rem, 5vw, 1.8rem); }
+    .header-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    h1 { margin: 0; font-weight: 700; font-size: clamp(1.1rem, 5vw, 1.8rem); flex: 1; min-width: 0; }
+    #logoutBtn { flex-shrink: 0; width: auto; padding: 6px 12px; background: transparent; border: 1px solid #333; border-radius: 6px; color: #777; font-size: 0.78rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+    #logoutBtn:hover { color: #eee; border-color: #555; background: #1a1a1a; }
 
     .setup-box { background: #1b1b1b; border: 1px solid #333; padding: 20px; border-radius: 6px; max-width: 400px; width: 100%; }
     label { font-size: 0.9rem; color: #ccc; }
     input { width: 100%; padding: 10px; margin-top: 8px; margin-bottom: 12px; border-radius: 4px; border: 1px solid #444; background: #222; color: #eee; font-size: 1rem; }
     button { padding: 12px 20px; background: #3b82f6; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; color: #111; font-size: 1rem; width: 100%; }
 
+    /* Tabs */
+    .tabs { display: flex; gap: 0; margin-bottom: 8px; border-bottom: 1px solid #2a2a2a; }
+    .tab { padding: 8px 16px; background: none; border: none; border-bottom: 2px solid transparent; color: #666; font-size: 0.88rem; font-weight: 600; cursor: pointer; width: auto; margin-bottom: -1px; display: flex; align-items: center; gap: 6px; border-radius: 0; }
+    .tab:hover { color: #aaa; }
+    .tab.active { color: #3b82f6; border-bottom-color: #3b82f6; }
+    .tab-count { background: #222; border-radius: 10px; padding: 1px 7px; font-size: 0.72rem; color: #666; }
+    .tab.active .tab-count { background: #1a3a6a; color: #3b82f6; }
+
     /* Search */
     .search-wrap { position: relative; margin-top: 8px; }
-    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none; display: flex; align-items: center; }
-    #searchInput { width: 100%; padding: 10px 36px 10px 34px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #eee; font-size: 0.95rem; margin: 0; transition: border-color 0.15s; }
+    .search-icon { position: absolute; left: 10px; top: 50%; color: #666; pointer-events: none; display: flex; align-items: center; }
+    #searchInput { width: 100%; padding: 10px 36px 10px 34px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #eee; font-size: 0.95rem; margin: 0; }
     #searchInput:focus { outline: none; border-color: #3b82f6; }
     #searchInput::placeholder { color: #555; }
-    .search-clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #555; cursor: pointer; font-size: 1.1rem; padding: 4px 6px; width: auto; display: none; line-height: 1; }
+    .search-clear { position: absolute; right: 8px; top: 50%; background: none; border: none; color: #555; cursor: pointer; font-size: 1.1rem; padding: 4px 6px; width: auto; display: none; line-height: 1; }
     .search-clear:hover { color: #eee; }
 
-    /* Format pills */
-    .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-    .pill { padding: 4px 10px; border-radius: 20px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.78rem; cursor: pointer; transition: background 0.12s, color 0.12s, border-color 0.12s; user-select: none; white-space: nowrap; }
+    /* Filter pill rows */
+    .pill-section { margin-top: 8px; }
+    .pill-section-label { font-size: 0.7rem; color: #555; text- letter-spacing: 0.06em; margin-bottom: 4px; }
+    .pill-section-toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; padding: 2px 0; }
+    .pill-section-toggle:hover .pill-section-label { color: #888; }
+    .pill-section-chevron { font-size: 0.65rem; color: #444; display: inline-block; }
+    .pill-section-toggle.open .pill-section-chevron { }
+    .pill-section-toggle.open .pill-section-label { color: #888; }
+    .genre-active-badge { font-size: 0.7rem; background: #1a3a6a; color: #3b82f6; border-radius: 10px; padding: 1px 7px; font-weight: 600; }
+    .genre-pills-wrap { display: none; }
+    .genre-pills-wrap.open { display: block; }
+    .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pill { padding: 4px 10px; border-radius: 20px; border: 1px solid #333; background: #1a1a1a; color: #aaa; font-size: 0.78rem; cursor: pointer; user-select: none; white-space: nowrap; }
     .pill:hover { border-color: #555; color: #eee; }
-    .pill.active { background: #3b82f6; border-color: #3b82f6; color: #111; font-weight: 600; }
+    .pill.active { background: #3b82f6; border-color: #3b82f6; color: #fff; font-weight: 600; }
 
-    /* Sort + random bar */
+    /* Sort bar */
     .sort-bar { margin-top: 8px; margin-bottom: 4px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     select { background: #1b1b1b; color: #eee; border: 1px solid #333; padding: 8px 12px; border-radius: 4px; font-size: 0.9rem; flex: 1; min-width: 0; }
-
-    #randomBtn {
-      flex-shrink: 0;
-      width: auto;
-      padding: 8px 14px;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 4px;
-      color: #eee;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s, border-color 0.15s;
-      white-space: nowrap;
-    }
+    #randomBtn { flex-shrink: 0; width: auto; padding: 8px 14px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #eee; font-size: 0.88rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
     #randomBtn:hover { background: #222; border-color: #3b82f6; color: #3b82f6; }
-    #randomBtn .dice { font-size: 1.1rem; display: inline-block; transition: transform 0.3s; }
-    #randomBtn.spinning .dice { animation: spin 0.4s ease-out; }
-    @keyframes spin {
-      0%   { transform: rotate(0deg) scale(1); }
-      40%  { transform: rotate(180deg) scale(1.3); }
-      100% { transform: rotate(360deg) scale(1); }
-    }
+    #randomBtn .dice { font-size: 1.1rem; display: inline-block; }
+    #randomBtn.spinning .dice { } 40% { } 100% { } }
 
     /* Result count */
     .result-count { font-size: 0.78rem; color: #666; margin-top: 6px; min-height: 1.2em; }
@@ -90,26 +82,37 @@
     /* Grid */
     .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
     @media (min-width: 600px) { .grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 20px; } }
-
-    .card { background: #1b1b1b; border: 1px solid #333; border-radius: 6px; padding: 8px; cursor: pointer; transition: transform 0.15s ease; min-width: 0; overflow: hidden; }
+    .card { background: #1b1b1b; border: 1px solid #333; border-radius: 6px; padding: 8px; cursor: pointer; min-width: 0; overflow: hidden; }
     @media (min-width: 600px) { .card { padding: 10px; } }
-    .card:hover { transform: scale(1.02); }
+    .card:hover { }
     .card.highlighted { border-color: #3b82f6; box-shadow: 0 0 0 2px #3b82f620; }
 
+    .cover-wrap { position: relative; }
     .cover { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 3px; background: #000; display: block; }
+
+    /* Format badges on cover */
+    .format-badges { position: absolute; bottom: 5px; left: 5px; display: flex; gap: 3px; flex-wrap: wrap; max-width: calc(100% - 10px); }
+    .format-badge { background: rgba(0,0,0,0.75); border: 1px solid rgba(255,255,255,0.12); color: #ddd; font-size: 0.6rem; font-weight: 600; padding: 2px 5px; border-radius: 3px; backdrop-filter: blur(4px); white-space: nowrap; letter-spacing: 0.03em; }
+    .format-badge.vinyl { border-color: rgba(59,130,246,0.5); color: #93c5fd; }
+    .format-badge.cd { border-color: rgba(167,139,250,0.5); color: #c4b5fd; }
+    .format-badge.cassette { border-color: rgba(52,211,153,0.5); color: #6ee7b7; }
+    .format-badge.box { border-color: rgba(251,191,36,0.5); color: #fde68a; }
 
     .card-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 4px; margin-top: 6px; }
     .title { font-size: 0.85rem; font-weight: 600; flex: 1; min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.3; word-break: break-word; }
     @media (min-width: 600px) { .title { font-size: 0.95rem; } }
 
-    .discogs-link { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 4px; background: #222; border: 1px solid #3a3a3a; color: #3b82f6; text-decoration: none; transition: background 0.15s, color 0.15s, transform 0.12s; margin-top: 1px; }
-    .discogs-link:hover { background: #3b82f6; border-color: #3b82f6; color: #111; transform: scale(1.12); }
+    .discogs-link { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 4px; background: #222; border: 1px solid #3a3a3a; color: #3b82f6; text-decoration: none; margin-top: 1px; }
+    .discogs-link:hover { background: #3b82f6; border-color: #3b82f6; color: #111; }
 
     .meta { margin-top: 3px; font-size: 0.76rem; color: #aaa; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     @media (min-width: 600px) { .meta { font-size: 0.82rem; } }
-
     .label-meta { margin-top: 2px; font-size: 0.72rem; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     @media (min-width: 600px) { .label-meta { font-size: 0.78rem; color: #777; } }
+
+    /* Genre tags on card */
+    .genre-tags { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 4px; }
+    .genre-tag { font-size: 0.62rem; color: #555; border: 1px solid #2a2a2a; border-radius: 3px; padding: 1px 5px; white-space: nowrap; }
 
     .details { margin-top: 8px; padding-top: 8px; border-top: 1px solid #333; font-size: 0.8rem; display: none; }
     @media (min-width: 600px) { .details { font-size: 0.85rem; } }
@@ -117,115 +120,29 @@
     .runtime { margin-top: 8px; font-weight: 600; color: #60a5fa; }
     .loading { font-size: 0.9rem; color: #aaa; margin-top: 6px; }
 
-    /* Random Record Modal */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-      pointer-events: none;
-    }
-    .modal-overlay.visible {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .modal {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 420px;
-      max-height: 90vh;
-      overflow-y: auto;
-      transform: scale(0.92) translateY(12px);
-      transition: transform 0.25s ease;
-      position: relative;
-    }
-    .modal-overlay.visible .modal {
-      transform: scale(1) translateY(0);
-    }
-    .modal-cover-wrap {
-      position: relative;
-    }
-    .modal-cover {
-      width: 100%;
-      aspect-ratio: 1/1;
-      object-fit: cover;
-      border-radius: 10px 10px 0 0;
-      display: block;
-    }
-    .modal-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 32px;
-      height: 32px;
-      min-width: 32px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.6);
-      border: none;
-      color: #eee;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-      padding: 0;
-      backdrop-filter: blur(4px);
-      transition: background 0.15s;
-    }
+    /* Wantlist note on card */
+    .want-note { margin-top: 4px; font-size: 0.68rem; color: #a78bfa; }
+
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; }
+    .modal-overlay.visible { opacity: 1; pointer-events: all; }
+    .modal { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; position: relative; }
+    .modal-overlay.visible .modal { }
+    .modal-cover-wrap { position: relative; }
+    .modal-cover { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px 10px 0 0; display: block; }
+    .modal-close { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; min-width: 32px; border-radius: 50%; background: rgba(0,0,0,0.6); border: none; color: #eee; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; padding: 0; backdrop-filter: blur(4px); }
     .modal-close:hover { background: rgba(0,0,0,0.85); }
     .modal-body { padding: 16px; }
     .modal-title { font-size: 1.15rem; font-weight: 700; line-height: 1.3; margin: 0 0 4px; }
     .modal-artist { font-size: 0.9rem; color: #aaa; margin-bottom: 2px; }
     .modal-meta { font-size: 0.82rem; color: #666; margin-bottom: 14px; }
     .modal-actions { display: flex; gap: 8px; margin-bottom: 16px; }
-    .modal-btn-primary {
-      flex: 1;
-      padding: 10px;
-      background: #3b82f6;
-      border: none;
-      border-radius: 6px;
-      color: #fff;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: background 0.15s;
-      width: auto;
-    }
+    .modal-btn-primary { flex: 1; padding: 10px; background: #3b82f6; border: none; border-radius: 6px; color: #fff; font-weight: 600; font-size: 0.9rem; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; width: auto; }
     .modal-btn-primary:hover { background: #2563eb; }
-    .modal-btn-secondary {
-      flex: 1;
-      padding: 10px;
-      background: #222;
-      border: 1px solid #333;
-      border-radius: 6px;
-      color: #eee;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: background 0.15s, border-color 0.15s;
-      width: auto;
-    }
+    .modal-btn-secondary { flex: 1; padding: 10px; background: #222; border: 1px solid #333; border-radius: 6px; color: #eee; font-weight: 600; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; width: auto; }
     .modal-btn-secondary:hover { background: #2a2a2a; border-color: #444; }
     .modal-tracklist { border-top: 1px solid #2a2a2a; padding-top: 12px; }
-    .modal-tracklist-title { font-size: 0.78rem; font-weight: 600; color: #555; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .modal-tracklist-title { font-size: 0.78rem; font-weight: 600; color: #555; text- letter-spacing: 0.06em; margin-bottom: 8px; }
     .modal-track { font-size: 0.82rem; color: #ccc; padding: 3px 0; line-height: 1.4; display: flex; justify-content: space-between; gap: 8px; }
     .modal-track-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .modal-track-dur { color: #555; flex-shrink: 0; font-variant-numeric: tabular-nums; }
@@ -235,38 +152,34 @@
 </head>
 <body>
 
-<h1 id="header">🎶 Discogs Collection</h1>
+<div class="header-row">
+  <h1 id="header">🎶 Discogs Collection</h1>
+  <button id="logoutBtn" style="display:none;" title="Change user or log out">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    Change User
+  </button>
+</div>
+
+<div id="tabs" class="tabs" style="display:none;">
+  <button class="tab active" data-tab="collection" id="tabCollection">
+    💿 Collection <span class="tab-count" id="tabCountCollection">0</span>
+  </button>
+  <button class="tab" data-tab="wantlist" id="tabWantlist">
+    ❤️ Wantlist <span class="tab-count" id="tabCountWantlist">0</span>
+  </button>
+</div>
 
 <div id="dashboard" class="dashboard" style="display:none;">
   <div class="dashboard-header" id="dashboardToggle">
-    <div class="dashboard-header-left">
-      <span>📊</span>
-      <span class="dashboard-title">Collector Dashboard</span>
-    </div>
+    <div class="dashboard-header-left"><span>📊</span><span class="dashboard-title">Collector Dashboard</span></div>
     <div class="dashboard-toggle" id="dashboardToggleText">Hide</div>
   </div>
   <div class="dashboard-body" id="dashboardBody">
     <div class="dashboard-cards">
-      <div class="stat-card">
-        <div class="stat-card-header"><span class="stat-icon">💠</span><span>Collection</span></div>
-        <div class="stat-main" id="collectionMain">—</div>
-        <div class="stat-sub" id="collectionSub">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-header"><span class="stat-icon">🎼</span><span>Artists</span></div>
-        <div class="stat-main" id="artistMain">—</div>
-        <div class="stat-sub" id="artistSub">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-header"><span class="stat-icon">💿</span><span>Formats</span></div>
-        <div class="stat-main" id="formatMain">—</div>
-        <div class="stat-sub" id="formatSub">—</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card-header"><span class="stat-icon">🕰</span><span>History</span></div>
-        <div class="stat-main" id="historyMain">—</div>
-        <div class="stat-sub" id="historySub">—</div>
-      </div>
+      <div class="stat-card"><div class="stat-card-header"><span class="stat-icon">💠</span><span>Collection</span></div><div class="stat-main" id="collectionMain">—</div><div class="stat-sub" id="collectionSub">—</div></div>
+      <div class="stat-card"><div class="stat-card-header"><span class="stat-icon">🎼</span><span>Artists</span></div><div class="stat-main" id="artistMain">—</div><div class="stat-sub" id="artistSub">—</div></div>
+      <div class="stat-card"><div class="stat-card-header"><span class="stat-icon">💿</span><span>Formats</span></div><div class="stat-main" id="formatMain">—</div><div class="stat-sub" id="formatSub">—</div></div>
+      <div class="stat-card"><div class="stat-card-header"><span class="stat-icon">🕰</span><span>History</span></div><div class="stat-main" id="historyMain">—</div><div class="stat-sub" id="historySub">—</div></div>
     </div>
   </div>
 </div>
@@ -274,14 +187,28 @@
 <div id="searchArea" style="display:none;">
   <div class="search-wrap">
     <span class="search-icon">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     </span>
     <input id="searchInput" type="search" placeholder="Artist, album, label, year, 70s, 1980s…" autocomplete="off" spellcheck="false">
     <button class="search-clear" id="searchClear" title="Clear">✕</button>
   </div>
-  <div class="filter-pills" id="formatPills"></div>
+
+  <div class="pill-section" id="formatPillSection">
+    <div class="pill-section-label">Format</div>
+    <div class="filter-pills" id="formatPills"></div>
+  </div>
+
+  <div class="pill-section" id="genrePillSection" style="display:none;">
+    <div class="pill-section-toggle" id="genreToggle">
+      <span class="pill-section-chevron">▶</span>
+      <span class="pill-section-label">Genre</span>
+      <span class="genre-active-badge" id="genreActiveBadge" style="display:none;"></span>
+    </div>
+    <div class="genre-pills-wrap" id="genrePillsWrap">
+      <div class="filter-pills" id="genrePills" style="margin-top:6px;"></div>
+    </div>
+  </div>
+
   <div class="result-count" id="resultCount"></div>
 </div>
 
@@ -290,6 +217,8 @@
     <option value="artist">Sort by Artist (A–Z)</option>
     <option value="yearAsc">Sort by Year (Oldest → Newest)</option>
     <option value="yearDesc">Sort by Year (Newest → Oldest)</option>
+    <option value="addedDesc">Sort by Recently Added</option>
+    <option value="addedAsc">Sort by First Added</option>
   </select>
   <button id="randomBtn" title="Pick a random record">
     <span class="dice">🎲</span> Random
@@ -300,8 +229,8 @@
 <div id="loading" class="loading"></div>
 <div id="results" class="grid"></div>
 
-<!-- Random Record Modal -->
-<div class="modal-overlay" id="randomModal" role="dialog" aria-modal="true" aria-label="Random record">
+<!-- Random Modal -->
+<div class="modal-overlay" id="randomModal" role="dialog" aria-modal="true">
   <div class="modal" id="modalContent">
     <div class="modal-cover-wrap">
       <img class="modal-cover" id="modalCover" src="" alt="">
@@ -316,9 +245,7 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           View on Discogs
         </a>
-        <button class="modal-btn-secondary" id="modalPickAnother">
-          <span>🎲</span> Pick Another
-        </button>
+        <button class="modal-btn-secondary" id="modalPickAnother"><span>🎲</span> Pick Another</button>
       </div>
       <div class="modal-tracklist" id="modalTracklist"></div>
     </div>
@@ -326,8 +253,11 @@
 </div>
 
 <script>
-  let globalReleases = [];
+  let globalReleases = [];      // collection releases
+  let wantlistReleases = [];    // wantlist releases
+  let activeTab = "collection"; // "collection" | "wantlist"
   let activeFormat = null;
+  let activeGenre = null;
   let currentFilteredReleases = [];
   const detailsCache = new Map();
 
@@ -339,10 +269,21 @@
 
   const linkIconSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
 
+  // ── Format badge colour class ─────────────────────────────────────
+  function formatBadgeClass(name) {
+    const n = (name || "").toLowerCase();
+    if (n.includes("vinyl") || n === "lp" || n === "12\"" || n === "7\"" || n === "10\"") return "vinyl";
+    if (n.includes("cd") || n.includes("sacd")) return "cd";
+    if (n.includes("cassette") || n.includes("tape")) return "cassette";
+    if (n.includes("box")) return "box";
+    return "";
+  }
+
+  // ── Setup ─────────────────────────────────────────────────────────
   function showSetup() {
     const box = document.createElement("div");
     box.className = "setup-box";
-    box.innerHTML = `<h2>Setup</h2><label>Discogs Username</label><input id="usernameInput" placeholder="e.g., dhrandy" autocomplete="username"><label>API Token (optional)</label><input id="tokenInput" placeholder="Only needed for private collections" type="password" autocomplete="off"><p style="font-size:0.78rem;color:#777;margin:0 0 12px">Stored locally on this device only.</p>`;
+    box.innerHTML = `<h2>Setup</h2><label>Discogs Username</label><input id="usernameInput" placeholder="e.g., dhrandy" autocomplete="username"><label>API Token (optional — required for wantlist)</label><input id="tokenInput" placeholder="Settings → Developers → Generate token" type="password" autocomplete="off"><p style="font-size:0.78rem;color:#777;margin:0 0 12px">Stored locally on this device only.</p>`;
     const btn = document.createElement("button");
     btn.textContent = "Save";
     btn.addEventListener("click", saveSetup);
@@ -364,11 +305,8 @@
     const body = document.getElementById("dashboardBody");
     const toggleText = document.getElementById("dashboardToggleText");
     const stored = localStorage.getItem("discogs_dashboard_collapsed");
-    if (stored === null || stored === "false") {
-      body.style.display = "block"; toggleText.textContent = "Hide";
-    } else {
-      body.style.display = "none"; toggleText.textContent = "Show";
-    }
+    if (stored === null || stored === "false") { body.style.display = "block"; toggleText.textContent = "Hide"; }
+    else { body.style.display = "none"; toggleText.textContent = "Show"; }
     document.getElementById("dashboardToggle").addEventListener("click", () => {
       const v = body.style.display === "block";
       body.style.display = v ? "none" : "block";
@@ -377,14 +315,16 @@
     });
   }
 
+  // ── Fetch ─────────────────────────────────────────────────────────
   async function fetchAllPages(baseURL) {
     let page = 1, all = [];
     while (true) {
       const sep = baseURL.includes("?") ? "&" : "?";
       const res = await fetch(`${baseURL}${sep}page=${page}&per_page=100`);
-      if (!res.ok) throw new Error(`API error: ${res.status} ${res.statusText}`);
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
       const data = await res.json();
-      all = all.concat(data.releases || []);
+      // Collection uses data.releases; wantlist uses data.wants
+      all = all.concat(data.releases || data.wants || []);
       const pages = data.pagination?.pages ?? 1;
       if (page >= pages) break;
       page++;
@@ -398,21 +338,27 @@
     if (!username) { showSetup(); return; }
 
     document.getElementById("header").textContent = "🎶 " + txt(username) + "'s Discogs Collection";
+    document.getElementById("logoutBtn").style.display = "flex";
 
-    let API_URL = `https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders/0/releases`;
-    if (token) API_URL += `?token=${encodeURIComponent(token)}`;
-
+    const auth = token ? "?token=" + encodeURIComponent(token) : "";
     const loadingEl = document.getElementById("loading");
     loadingEl.textContent = "Loading your collection…";
 
     try {
-      globalReleases = await fetchAllPages(API_URL);
+      const collURL = `https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders/0/releases` + auth;
+      globalReleases = await fetchAllPages(collURL);
     } catch (err) {
       loadingEl.textContent = "Failed to load collection: " + err.message;
       return;
     }
 
     loadingEl.textContent = "";
+
+    // Load wantlist in background (needs token for private wantlists)
+    loadWantlist(username, auth);
+
+    document.getElementById("tabs").style.display = "flex";
+    document.getElementById("tabCountCollection").textContent = globalReleases.length;
     document.getElementById("dashboard").style.display = "block";
     document.getElementById("searchArea").style.display = "block";
     document.getElementById("sortBar").style.display = "flex";
@@ -420,171 +366,59 @@
     initDashboardToggle();
     computeDashboard(globalReleases);
     buildFormatPills(globalReleases);
+    buildGenrePills(globalReleases);
     initSearch();
     initRandom();
+    initLogout();
+    initTabs();
     applyFilters();
     document.getElementById("sortSelect").addEventListener("change", applyFilters);
   }
 
-  // ── Random Record ────────────────────────────────────────────────
-  function initRandom() {
-    const btn = document.getElementById("randomBtn");
-    const overlay = document.getElementById("randomModal");
-    const closeBtn = document.getElementById("modalClose");
-    const pickAnotherBtn = document.getElementById("modalPickAnother");
-
-    btn.addEventListener("click", () => {
-      // Spin animation
-      btn.classList.add("spinning");
-      setTimeout(() => btn.classList.remove("spinning"), 400);
-      openRandomModal();
-    });
-
-    pickAnotherBtn.addEventListener("click", () => {
-      openRandomModal();
-    });
-
-    closeBtn.addEventListener("click", closeModal);
-
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) closeModal();
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeModal();
-    });
-  }
-
-  function openRandomModal() {
-    const pool = currentFilteredReleases.length > 0 ? currentFilteredReleases : globalReleases;
-    if (pool.length === 0) return;
-
-    const item = pool[Math.floor(Math.random() * pool.length)];
-    const info = item.basic_information;
-    const releaseId = info.id;
-
-    // Populate modal fields
-    document.getElementById("modalCover").src = info.cover_image || "";
-    document.getElementById("modalCover").alt = txt(info.title);
-    document.getElementById("modalTitle").textContent = info.title || "";
-    document.getElementById("modalArtist").textContent = info.artists?.[0]?.name || "";
-
-    const labelName = info.labels?.[0]?.name;
-    const labelCatno = info.labels?.[0]?.catno;
-    let metaParts = [];
-    if (info.year) metaParts.push(info.year);
-    if (labelName && labelName !== "Not On Label") {
-      let l = labelName;
-      if (labelCatno && labelCatno.toLowerCase() !== "none") l += " · " + labelCatno;
-      metaParts.push(l);
-    }
-    document.getElementById("modalMeta").textContent = metaParts.join(" · ");
-    document.getElementById("modalDiscogsLink").href = "https://www.discogs.com/release/" + encodeURIComponent(releaseId);
-
-    // Highlight card in grid
-    document.querySelectorAll(".card.highlighted").forEach(c => c.classList.remove("highlighted"));
-    const card = document.getElementById("details-" + releaseId)?.closest(".card");
-    if (card) {
-      card.classList.add("highlighted");
-      card.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-
-    // Load tracklist into modal
-    loadModalTracklist(releaseId);
-
-    // Show modal
-    const overlay = document.getElementById("randomModal");
-    overlay.classList.add("visible");
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeModal() {
-    const overlay = document.getElementById("randomModal");
-    overlay.classList.remove("visible");
-    document.body.style.overflow = "";
-    document.querySelectorAll(".card.highlighted").forEach(c => c.classList.remove("highlighted"));
-  }
-
-  async function loadModalTracklist(releaseId) {
-    const container = document.getElementById("modalTracklist");
-    container.innerHTML = "";
-
-    const titleEl = document.createElement("div");
-    titleEl.className = "modal-tracklist-title";
-    titleEl.textContent = "Tracklist";
-    container.appendChild(titleEl);
-
-    // Use cache if available
-    if (detailsCache.has(releaseId)) {
-      renderModalTracklist(container, detailsCache.get(releaseId + "_raw"));
-      return;
-    }
-
-    const loadingEl = document.createElement("div");
-    loadingEl.className = "modal-loading";
-    loadingEl.textContent = "Loading tracklist…";
-    container.appendChild(loadingEl);
-
+  async function loadWantlist(username, auth) {
     try {
-      const res = await fetch("https://api.discogs.com/releases/" + encodeURIComponent(releaseId));
-      if (!res.ok) throw new Error(res.status + " " + res.statusText);
-      const data = await res.json();
-
-      // Also cache for the main grid details
-      if (data.tracklist) {
-        detailsCache.set(releaseId + "_raw", data.tracklist);
-      }
-
-      loadingEl.remove();
-      if (!data.tracklist || data.tracklist.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "modal-loading";
-        empty.textContent = "No tracklist available.";
-        container.appendChild(empty);
-        return;
-      }
-      renderModalTracklist(container, data.tracklist);
+      const wantURL = `https://api.discogs.com/users/${encodeURIComponent(username)}/wants` + auth;
+      wantlistReleases = await fetchAllPages(wantURL);
+      // Normalise wantlist items — they have basic_information nested under .basic_information same as collection
+      document.getElementById("tabCountWantlist").textContent = wantlistReleases.length;
     } catch (err) {
-      loadingEl.textContent = "Could not load tracklist.";
+      // Wantlist can fail silently (private or no token) — tab stays but shows 0
+      console.warn("Could not load wantlist:", err.message);
     }
   }
 
-  function renderModalTracklist(container, tracklist) {
-    let totalSeconds = 0;
-    tracklist.forEach((track, index) => {
-      const pos = (track.position || "").replace(/[-]+$/g, "").trim();
-      const time = track.duration || "";
-      const row = document.createElement("div");
-      row.className = "modal-track";
-      const nameEl = document.createElement("span");
-      nameEl.className = "modal-track-name";
-      nameEl.textContent = (pos || (index + 1)) + ". " + (track.title || "");
-      row.appendChild(nameEl);
-      if (time) {
-        const durEl = document.createElement("span");
-        durEl.className = "modal-track-dur";
-        durEl.textContent = time;
-        row.appendChild(durEl);
-      }
-      container.appendChild(row);
-      if (time.includes(":")) {
-        const [m, s] = time.split(":").map(Number);
-        totalSeconds += (m * 60) + s;
-      }
+  // ── Tabs ──────────────────────────────────────────────────────────
+  function initTabs() {
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        const which = tab.dataset.tab;
+        if (which === activeTab) return;
+        activeTab = which;
+        document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === which));
+
+        // Rebuild pills for the active dataset
+        const data = activeTab === "wantlist" ? wantlistReleases : globalReleases;
+        activeFormat = null;
+        activeGenre = null;
+        const badge = document.getElementById("genreActiveBadge");
+        if (badge) { badge.style.display = "none"; }
+        buildFormatPills(data);
+        buildGenrePills(data);
+        computeDashboard(activeTab === "collection" ? globalReleases : wantlistReleases);
+        applyFilters();
+      });
     });
-    if (totalSeconds > 0) {
-      const rt = document.createElement("div");
-      rt.className = "modal-runtime";
-      rt.textContent = "Total runtime: " + Math.floor(totalSeconds / 60) + ":" + String(totalSeconds % 60).padStart(2, "0");
-      container.appendChild(rt);
-    }
   }
 
-  // ── Format pills ─────────────────────────────────────────────────
+  function activeReleases() {
+    return activeTab === "wantlist" ? wantlistReleases : globalReleases;
+  }
+
+  // ── Format pills ──────────────────────────────────────────────────
   function buildFormatPills(releases) {
     const counts = {};
     releases.forEach(item => {
-      item.basic_information.formats?.forEach(f => {
+      item.basic_information?.formats?.forEach(f => {
         const n = f.name || "Unknown";
         counts[n] = (counts[n] || 0) + 1;
       });
@@ -606,9 +440,62 @@
   }
 
   function setFormatPill(clickedPill, formatName) {
-    document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll("#formatPills .pill").forEach(p => p.classList.remove("active"));
     clickedPill.classList.add("active");
     activeFormat = formatName || null;
+    applyFilters();
+  }
+
+  // ── Genre pills ───────────────────────────────────────────────────
+  let genreToggleInited = false;
+  function buildGenrePills(releases) {
+    const counts = {};
+    releases.forEach(item => {
+      const info = item.basic_information;
+      const tags = [...(info?.genres || []), ...(info?.styles || [])];
+      tags.forEach(g => { counts[g] = (counts[g] || 0) + 1; });
+    });
+
+    const section = document.getElementById("genrePillSection");
+    const container = document.getElementById("genrePills");
+    container.innerHTML = "";
+
+    if (Object.keys(counts).length === 0) { section.style.display = "none"; return; }
+    section.style.display = "block";
+
+    const allPill = document.createElement("button");
+    allPill.className = "pill active";
+    allPill.textContent = "All";
+    allPill.addEventListener("click", () => setGenrePill(allPill, ""));
+    container.appendChild(allPill);
+
+    Object.entries(counts).sort((a, b) => b[1] - a[1]).forEach(([name, count]) => {
+      const pill = document.createElement("button");
+      pill.className = "pill";
+      pill.textContent = name + " (" + count + ")";
+      pill.addEventListener("click", () => setGenrePill(pill, name));
+      container.appendChild(pill);
+    });
+
+    // Wire up toggle once
+    if (!genreToggleInited) {
+      genreToggleInited = true;
+      document.getElementById("genreToggle").addEventListener("click", () => {
+        const toggle = document.getElementById("genreToggle");
+        const wrap = document.getElementById("genrePillsWrap");
+        const isOpen = wrap.classList.toggle("open");
+        toggle.classList.toggle("open", isOpen);
+      });
+    }
+  }
+
+  function setGenrePill(clickedPill, genreName) {
+    document.querySelectorAll("#genrePills .pill").forEach(p => p.classList.remove("active"));
+    clickedPill.classList.add("active");
+    activeGenre = genreName || null;
+    const badge = document.getElementById("genreActiveBadge");
+    if (activeGenre) { badge.textContent = activeGenre; badge.style.display = "inline"; }
+    else { badge.style.display = "none"; }
     applyFilters();
   }
 
@@ -634,11 +521,7 @@
     const q = raw.trim().toLowerCase();
     if (!q) return { type: "empty" };
     const dm = q.match(/^(?:19|20)?(\d0)'?s$/);
-    if (dm) {
-      const d = parseInt(dm[1]);
-      const start = (d <= 30 ? 2000 : 1900) + d;
-      return { type: "decade", start, end: start + 9 };
-    }
+    if (dm) { const d = parseInt(dm[1]); const start = (d <= 30 ? 2000 : 1900) + d; return { type: "decade", start, end: start + 9 }; }
     const ym = q.match(/^(19\d{2}|20\d{2})$/);
     if (ym) return { type: "year", year: parseInt(ym[1]) };
     const rm = q.match(/^(19\d{2}|20\d{2})\s*[-]\s*(19\d{2}|20\d{2})$/);
@@ -649,58 +532,77 @@
   function matchesQuery(item, parsed) {
     if (parsed.type === "empty") return true;
     const info = item.basic_information;
-    const year = Number(info.year) || 0;
+    const year = Number(info?.year) || 0;
     if (parsed.type === "decade") return year >= parsed.start && year <= parsed.end;
     if (parsed.type === "year")   return year === parsed.year;
     if (parsed.type === "range")  return year >= parsed.start && year <= parsed.end;
     const q = parsed.q;
-    const artist = (info.artists?.[0]?.name || "").toLowerCase();
-    const title  = (info.title || "").toLowerCase();
-    const label  = (info.labels?.[0]?.name || "").toLowerCase();
-    return artist.includes(q) || title.includes(q) || label.includes(q) || String(info.year || "").includes(q);
+    const artist = (info?.artists?.[0]?.name || "").toLowerCase();
+    const title  = (info?.title || "").toLowerCase();
+    const label  = (info?.labels?.[0]?.name || "").toLowerCase();
+    return artist.includes(q) || title.includes(q) || label.includes(q) || String(info?.year || "").includes(q);
   }
 
   function matchesFormat(item) {
     if (!activeFormat) return true;
-    return item.basic_information.formats?.some(f => f.name === activeFormat) ?? false;
+    return item.basic_information?.formats?.some(f => f.name === activeFormat) ?? false;
+  }
+
+  function matchesGenre(item) {
+    if (!activeGenre) return true;
+    const info = item.basic_information;
+    return [...(info?.genres || []), ...(info?.styles || [])].includes(activeGenre);
   }
 
   function artistSortKey(name) {
     return (name || "").toLowerCase().replace(/\s*\(\d+\)\s*$/, "").replace(/^(the|a|an)\s+/, "");
   }
 
+  // ── Apply filters + sort + render ─────────────────────────────────
   function applyFilters() {
     const query = document.getElementById("searchInput")?.value ?? "";
     const parsed = parseQuery(query);
     const mode = document.getElementById("sortSelect").value;
-    let results = globalReleases.filter(item => matchesQuery(item, parsed) && matchesFormat(item));
+    const pool = activeReleases();
+
+    let results = pool.filter(item => matchesQuery(item, parsed) && matchesFormat(item) && matchesGenre(item));
+
     if (mode === "artist") {
-      const keys = new Map(results.map(i => [i, artistSortKey(i.basic_information.artists?.[0]?.name)]));
+      const keys = new Map(results.map(i => [i, artistSortKey(i.basic_information?.artists?.[0]?.name)]));
       results.sort((a, b) => keys.get(a).localeCompare(keys.get(b)));
     } else if (mode === "yearAsc") {
-      results.sort((a, b) => (a.basic_information.year || 9999) - (b.basic_information.year || 9999));
+      results.sort((a, b) => (a.basic_information?.year || 9999) - (b.basic_information?.year || 9999));
     } else if (mode === "yearDesc") {
-      results.sort((a, b) => (b.basic_information.year || 0) - (a.basic_information.year || 0));
+      results.sort((a, b) => (b.basic_information?.year || 0) - (a.basic_information?.year || 0));
+    } else if (mode === "addedDesc") {
+      results.sort((a, b) => new Date(b.date_added || 0) - new Date(a.date_added || 0));
+    } else if (mode === "addedAsc") {
+      results.sort((a, b) => new Date(a.date_added || 0) - new Date(b.date_added || 0));
     }
+
     currentFilteredReleases = results;
     renderGrid(results);
-    updateResultCount(results.length, globalReleases.length, parsed, query);
+    updateResultCount(results.length, pool.length, parsed, query);
   }
 
   function updateResultCount(shown, total, parsed, query) {
     const el = document.getElementById("resultCount");
     if (!el) return;
-    if (shown === total && !activeFormat) { el.innerHTML = ""; return; }
+    if (shown === total && !activeFormat && !activeGenre) { el.innerHTML = ""; return; }
     let label = "";
     if (parsed.type === "decade") label = parsed.start + "s";
     else if (parsed.type === "year") label = String(parsed.year);
     else if (parsed.type === "range") label = parsed.start + "–" + parsed.end;
     else if (parsed.type === "text" && query.trim()) label = '"' + query.trim() + '"';
-    const fmt = activeFormat ? " · " + activeFormat : "";
-    const flt = label ? " matching " + label : "";
-    el.innerHTML = "<span>" + shown + "</span> of " + total + " records" + flt + fmt;
+    const parts = [];
+    if (label) parts.push("matching " + label);
+    if (activeFormat) parts.push(activeFormat);
+    if (activeGenre) parts.push(activeGenre);
+    const suffix = parts.length ? " · " + parts.join(" · ") : "";
+    el.innerHTML = "<span>" + shown + "</span> of " + total + " records" + suffix;
   }
 
+  // ── Render grid ───────────────────────────────────────────────────
   function renderGrid(releases) {
     const container = document.getElementById("results");
     container.innerHTML = "";
@@ -711,10 +613,15 @@
       container.appendChild(empty);
       return;
     }
+
+    const isWantlist = activeTab === "wantlist";
     const fragment = document.createDocumentFragment();
+
     releases.forEach(item => {
       const info = item.basic_information;
       const releaseId = info.id;
+
+      // Label text
       const labelName = info.labels?.[0]?.name ?? null;
       const labelCatno = info.labels?.[0]?.catno ?? null;
       let labelText = "";
@@ -722,10 +629,39 @@
         labelText = labelName;
         if (labelCatno && labelCatno.toLowerCase() !== "none") labelText += " · " + labelCatno;
       }
+
+      // Format names for badges
+      const formats = info.formats?.map(f => f.name).filter(Boolean) || [];
+
+      // Genres + styles for tags
+      const genres = [...(info.genres || []), ...(info.styles || [])].slice(0, 3);
+
       const card = document.createElement("div");
       card.className = "card";
+
+      // Cover wrap (holds badges)
+      const coverWrap = document.createElement("div");
+      coverWrap.className = "cover-wrap";
       const img = document.createElement("img");
       img.className = "cover"; img.src = info.cover_image || ""; img.alt = txt(info.title); img.loading = "lazy";
+      coverWrap.appendChild(img);
+
+      // Format badges
+      if (formats.length > 0) {
+        const badgeRow = document.createElement("div");
+        badgeRow.className = "format-badges";
+        formats.forEach(name => {
+          const badge = document.createElement("span");
+          badge.className = "format-badge " + formatBadgeClass(name);
+          badge.textContent = name;
+          badgeRow.appendChild(badge);
+        });
+        coverWrap.appendChild(badgeRow);
+      }
+
+      card.appendChild(coverWrap);
+
+      // Title row
       const titleRow = document.createElement("div");
       titleRow.className = "card-title-row";
       const titleEl = document.createElement("div");
@@ -737,17 +673,58 @@
       link.innerHTML = linkIconSVG;
       link.addEventListener("click", e => e.stopPropagation());
       titleRow.appendChild(titleEl); titleRow.appendChild(link);
+      card.appendChild(titleRow);
+
+      // Artist · Year
       const metaEl = document.createElement("div");
       metaEl.className = "meta";
       metaEl.textContent = (info.artists?.[0]?.name || "Unknown") + " · " + (info.year || "Unknown");
-      const detailsEl = document.createElement("div");
-      detailsEl.className = "details"; detailsEl.id = "details-" + releaseId;
-      card.appendChild(img); card.appendChild(titleRow); card.appendChild(metaEl);
+      card.appendChild(metaEl);
+
+      // Label
       if (labelText) {
         const labelEl = document.createElement("div");
         labelEl.className = "label-meta"; labelEl.textContent = "🏷 " + labelText;
         card.appendChild(labelEl);
       }
+
+      // Genre tags
+      if (genres.length > 0) {
+        const tagRow = document.createElement("div");
+        tagRow.className = "genre-tags";
+        genres.forEach(g => {
+          const tag = document.createElement("span");
+          tag.className = "genre-tag"; tag.textContent = g;
+          tagRow.appendChild(tag);
+        });
+        card.appendChild(tagRow);
+      }
+
+      // Wantlist note (date added)
+      if (isWantlist && item.date_added) {
+        const noteEl = document.createElement("div");
+        noteEl.className = "want-note";
+        noteEl.textContent = "❤️ Wanted since " + new Date(item.date_added).getFullYear();
+        card.appendChild(noteEl);
+      }
+
+      // Recently added note for collection
+      if (!isWantlist && item.date_added) {
+        const d = new Date(item.date_added);
+        const now = new Date();
+        const days = Math.floor((now - d) / 86400000);
+        if (days <= 30) {
+          const noteEl = document.createElement("div");
+          noteEl.className = "want-note";
+          noteEl.style.color = "#86efac";
+          noteEl.textContent = days === 0 ? "🆕 Added today" : "🆕 Added " + days + " day" + (days === 1 ? "" : "s") + " ago";
+          card.appendChild(noteEl);
+        }
+      }
+
+      // Tracklist
+      const detailsEl = document.createElement("div");
+      detailsEl.className = "details"; detailsEl.id = "details-" + releaseId;
       card.appendChild(detailsEl);
       card.addEventListener("click", () => loadDetails(releaseId));
       fragment.appendChild(card);
@@ -755,6 +732,7 @@
     container.appendChild(fragment);
   }
 
+  // ── Tracklist ─────────────────────────────────────────────────────
   async function loadDetails(releaseId) {
     const detailsEl = document.getElementById("details-" + releaseId);
     if (!detailsEl) return;
@@ -777,10 +755,7 @@
         trackEl.className = "track";
         trackEl.textContent = (pos || (index + 1)) + ". " + (track.title || "") + (time ? " — " + time : "");
         frag.appendChild(trackEl);
-        if (time.includes(":")) {
-          const [m, s] = time.split(":").map(Number);
-          totalSeconds += (m * 60) + s;
-        }
+        if (time.includes(":")) { const [m, s] = time.split(":").map(Number); totalSeconds += (m * 60) + s; }
       });
       const runtimeEl = document.createElement("div");
       runtimeEl.className = "runtime";
@@ -794,17 +769,102 @@
     }
   }
 
+  // ── Random modal ──────────────────────────────────────────────────
+  function initRandom() {
+    const btn = document.getElementById("randomBtn");
+    const overlay = document.getElementById("randomModal");
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("modalPickAnother").addEventListener("click", openRandomModal);
+    overlay.addEventListener("click", e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+    btn.addEventListener("click", () => {
+      openRandomModal();
+    });
+  }
+
+  function openRandomModal() {
+    const pool = currentFilteredReleases.length > 0 ? currentFilteredReleases : activeReleases();
+    if (pool.length === 0) return;
+    const item = pool[Math.floor(Math.random() * pool.length)];
+    const info = item.basic_information;
+    const releaseId = info.id;
+    document.getElementById("modalCover").src = info.cover_image || "";
+    document.getElementById("modalCover").alt = txt(info.title);
+    document.getElementById("modalTitle").textContent = info.title || "";
+    document.getElementById("modalArtist").textContent = info.artists?.[0]?.name || "";
+    const labelName = info.labels?.[0]?.name;
+    const labelCatno = info.labels?.[0]?.catno;
+    let metaParts = [];
+    if (info.year) metaParts.push(info.year);
+    if (labelName && labelName !== "Not On Label") {
+      let l = labelName;
+      if (labelCatno && labelCatno.toLowerCase() !== "none") l += " · " + labelCatno;
+      metaParts.push(l);
+    }
+    document.getElementById("modalMeta").textContent = metaParts.join(" · ");
+    document.getElementById("modalDiscogsLink").href = "https://www.discogs.com/release/" + encodeURIComponent(releaseId);
+    document.querySelectorAll(".card.highlighted").forEach(c => c.classList.remove("highlighted"));
+    const card = document.getElementById("details-" + releaseId)?.closest(".card");
+    if (card) { card.classList.add("highlighted"); card.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    loadModalTracklist(releaseId);
+    document.getElementById("randomModal").classList.add("visible");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    document.getElementById("randomModal").classList.remove("visible");
+    document.body.style.overflow = "";
+    document.querySelectorAll(".card.highlighted").forEach(c => c.classList.remove("highlighted"));
+  }
+
+  async function loadModalTracklist(releaseId) {
+    const container = document.getElementById("modalTracklist");
+    container.innerHTML = "";
+    const titleEl = document.createElement("div");
+    titleEl.className = "modal-tracklist-title"; titleEl.textContent = "Tracklist";
+    container.appendChild(titleEl);
+    if (detailsCache.has(releaseId + "_raw")) { renderModalTracklist(container, detailsCache.get(releaseId + "_raw")); return; }
+    const loadingEl = document.createElement("div");
+    loadingEl.className = "modal-loading"; loadingEl.textContent = "Loading tracklist…";
+    container.appendChild(loadingEl);
+    try {
+      const res = await fetch("https://api.discogs.com/releases/" + encodeURIComponent(releaseId));
+      if (!res.ok) throw new Error(res.status + " " + res.statusText);
+      const data = await res.json();
+      if (data.tracklist) detailsCache.set(releaseId + "_raw", data.tracklist);
+      loadingEl.remove();
+      if (!data.tracklist || data.tracklist.length === 0) { const e = document.createElement("div"); e.className = "modal-loading"; e.textContent = "No tracklist available."; container.appendChild(e); return; }
+      renderModalTracklist(container, data.tracklist);
+    } catch (err) { loadingEl.textContent = "Could not load tracklist."; }
+  }
+
+  function renderModalTracklist(container, tracklist) {
+    let totalSeconds = 0;
+    tracklist.forEach((track, index) => {
+      const pos = (track.position || "").replace(/[-]+$/g, "").trim();
+      const time = track.duration || "";
+      const row = document.createElement("div"); row.className = "modal-track";
+      const nameEl = document.createElement("span"); nameEl.className = "modal-track-name"; nameEl.textContent = (pos || (index + 1)) + ". " + (track.title || ""); row.appendChild(nameEl);
+      if (time) { const durEl = document.createElement("span"); durEl.className = "modal-track-dur"; durEl.textContent = time; row.appendChild(durEl); }
+      container.appendChild(row);
+      if (time.includes(":")) { const [m, s] = time.split(":").map(Number); totalSeconds += (m * 60) + s; }
+    });
+    if (totalSeconds > 0) {
+      const rt = document.createElement("div"); rt.className = "modal-runtime";
+      rt.textContent = "Total runtime: " + Math.floor(totalSeconds / 60) + ":" + String(totalSeconds % 60).padStart(2, "0");
+      container.appendChild(rt);
+    }
+  }
+
+  // ── Dashboard ─────────────────────────────────────────────────────
   function computeDashboard(releases) {
     const artistCounts = {}, formatCounts = {};
     let oldest = Infinity, newest = -Infinity, yearSum = 0, yearCount = 0;
     releases.forEach(item => {
       const info = item.basic_information;
-      if (info.artists?.length > 0) { const n = info.artists[0].name; artistCounts[n] = (artistCounts[n] || 0) + 1; }
-      info.formats?.forEach(f => { const n = f.name || "Unknown"; formatCounts[n] = (formatCounts[n] || 0) + 1; });
-      if (info.year) {
-        const y = Number(info.year);
-        if (!isNaN(y)) { if (y < oldest) oldest = y; if (y > newest) newest = y; yearSum += y; yearCount++; }
-      }
+      if (info?.artists?.length > 0) { const n = info.artists[0].name; artistCounts[n] = (artistCounts[n] || 0) + 1; }
+      info?.formats?.forEach(f => { const n = f.name || "Unknown"; formatCounts[n] = (formatCounts[n] || 0) + 1; });
+      if (info?.year) { const y = Number(info.year); if (!isNaN(y)) { if (y < oldest) oldest = y; if (y > newest) newest = y; yearSum += y; yearCount++; } }
     });
     const total = releases.length;
     const uniqueArtists = Object.keys(artistCounts).length;
@@ -816,11 +876,22 @@
     document.getElementById("collectionMain").textContent = total + " releases";
     document.getElementById("collectionSub").textContent = uniqueArtists + " unique artists";
     if (topArtist) { document.getElementById("artistMain").textContent = topArtist[0] + " (" + topArtist[1] + ")"; document.getElementById("artistSub").textContent = uniqueArtists + " unique artists"; }
-    else { document.getElementById("artistMain").textContent = "No artist data"; document.getElementById("artistSub").textContent = "—"; }
+    else { document.getElementById("artistMain").textContent = "No data"; document.getElementById("artistSub").textContent = "—"; }
     if (mainFormat) { document.getElementById("formatMain").textContent = mainFormat[0] + " (" + mainFormat[1] + ")"; document.getElementById("formatSub").textContent = sortedFormats.map(([n, c]) => n + " (" + c + ")").join(", "); }
-    else { document.getElementById("formatMain").textContent = "No format data"; document.getElementById("formatSub").textContent = "—"; }
-    if (hasYears) { document.getElementById("historyMain").textContent = "Oldest: " + oldest + " · Newest: " + newest; document.getElementById("historySub").textContent = avgYear ? "Average year: " + avgYear : "Average year: —"; }
+    else { document.getElementById("formatMain").textContent = "No data"; document.getElementById("formatSub").textContent = "—"; }
+    if (hasYears) { document.getElementById("historyMain").textContent = "Oldest: " + oldest + " · Newest: " + newest; document.getElementById("historySub").textContent = avgYear ? "Average year: " + avgYear : "—"; }
     else { document.getElementById("historyMain").textContent = "No year data"; document.getElementById("historySub").textContent = "—"; }
+  }
+
+  // ── Logout ────────────────────────────────────────────────────────
+  function initLogout() {
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      if (confirm("Change user? This will clear your saved username and token.")) {
+        localStorage.removeItem("discogs_username");
+        localStorage.removeItem("discogs_token");
+        location.reload();
+      }
+    });
   }
 
   loadCollection();
