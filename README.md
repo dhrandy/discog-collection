@@ -6,7 +6,9 @@ A clean, mobile-friendly single-file web app for browsing your Discogs vinyl (or
 
 ## Demo Site
 
-https://discogs-collection.netlify.app/ - Don't use your token on this site. If there's an error, make sure you discogs collection is public under your settings/privacy "Allow others to browse my collection" on the discogs website. Then save and refresh.
+https://discogs-collection.netlify.app/ 
+
+Don't use your token on this site. If there's an error, make sure you discogs collection is public under your settings/privacy "Allow others to browse my collection" on the discogs website. Then save and refresh.
 
 ## Screenshot
 
