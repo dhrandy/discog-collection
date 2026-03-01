@@ -5,12 +5,9 @@ A clean, mobile-friendly single-file web app for browsing your Discogs vinyl (or
 ![Static Badge](https://img.shields.io/badge/single--file-HTML-blue) ![Static Badge](https://img.shields.io/badge/no_dependencies-✓-blue) ![Static Badge](https://img.shields.io/badge/mobile--friendly-✓-blue)
 
 ---
-
-![Screenshot_1-3-2026_141629_collection compact synology me](https://github.com/user-attachments/assets/c3fa54f6-bdb5-4fe9-bdf5-ad6e0cf15c76)
-
-![Screenshot_1-3-2026_141541_collection compact synology me](https://github.com/user-attachments/assets/c2612a8a-bef3-475a-a167-89c684b1ebec)
-
+![Screenshot_1-3-2026_141931_collection compact synology me](https://github.com/user-attachments/assets/cfaf8c69-c688-423a-a294-67fe3d76fb4e)
 ---
+
 
 ## Features
 
