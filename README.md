@@ -6,7 +6,7 @@ A clean, mobile-friendly single-file web app for browsing your Discogs vinyl (or
 
 ## Demo Site
 
-https://darling-cascaron-7abcbc.netlify.app/
+[https://darling-cascaron-7abcbc.netlify.app/](https://discogs-collection.netlify.app/)
 
 ## Screenshot
 
