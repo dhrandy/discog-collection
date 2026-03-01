@@ -1,6 +1,6 @@
 # 🎶 Discogs Collection Viewer
 
-A clean, mobile-friendly single-file web app for browsing your Discogs vinyl (or any format) collection. No server, no build step, no dependencies — just open the HTML file in a browser or self-host it.
+A clean, mobile‑friendly, single‑file web app for browsing your Discogs vinyl (or any format) collection. No server, no build step, no dependencies — just open the HTML file in your browser or self‑host it. On IOS, you can add it to your home screen by selecting the share button, and on Android, Windows, or Mac you can save it as an app for quick access.
 
 ![Static Badge](https://img.shields.io/badge/single--file-HTML-blue) ![Static Badge](https://img.shields.io/badge/no_dependencies-✓-blue) ![Static Badge](https://img.shields.io/badge/mobile--friendly-✓-blue)
 
