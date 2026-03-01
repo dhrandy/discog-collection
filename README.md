@@ -12,7 +12,7 @@ Don't use your token on this site. If there's an error, make sure your Discogs c
 
 ## Screenshot
 
-![Screenshot_1-3-2026_141931_collection compact synology me](https://github.com/user-attachments/assets/cfaf8c69-c688-423a-a294-67fe3d76fb4e)
+![Screenshot_1-3-2026_184132_](https://github.com/user-attachments/assets/d146d4ec-ea9d-4237-9739-7ed4a1066794)
 
 ---
 
