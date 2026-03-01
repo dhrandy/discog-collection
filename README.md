@@ -2,20 +2,21 @@
 
 A clean, mobile-friendly single-file web app for browsing your Discogs vinyl (or any format) collection. No server, no build step, no dependencies — just open the HTML file in a browser or self-host it.
 
----
-
-##Demo Site
-https://darling-cascaron-7abcbc.netlify.app/
-
----
-
-##Screenshots
-
 ![Static Badge](https://img.shields.io/badge/single--file-HTML-blue) ![Static Badge](https://img.shields.io/badge/no_dependencies-✓-blue) ![Static Badge](https://img.shields.io/badge/mobile--friendly-✓-blue)
 
 ---
-![Screenshot_1-3-2026_141931_collection compact synology me](https://github.com/user-attachments/assets/cfaf8c69-c688-423a-a294-67fe3d76fb4e)
+
+##Demo Site
+
+https://darling-cascaron-7abcbc.netlify.app/
+
 ---
+##Screenshot
+
+![Screenshot_1-3-2026_141931_collection compact synology me](https://github.com/user-attachments/assets/cfaf8c69-c688-423a-a294-67fe3d76fb4e)
+
+---
+
 
 
 ## Features
