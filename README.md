@@ -4,9 +4,15 @@ A clean, mobile-friendly single-file web app for browsing your Discogs vinyl (or
 
 ![Static Badge](https://img.shields.io/badge/single--file-HTML-blue) ![Static Badge](https://img.shields.io/badge/no_dependencies-✓-blue) ![Static Badge](https://img.shields.io/badge/mobile--friendly-✓-blue)
 
+## Demo Site
+
+https://discogs-collection.netlify.app/
+
+Don't use your token on this site. If there's an error, make sure your Discogs collection is public under your settings/privacy "Allow others to browse my collection" on the Discogs website. Then save and refresh.
+
 ## Screenshot
 
-![Screenshot_2-3-2026_184221_collection compact synology me](https://github.com/user-attachments/assets/ee6704ce-a39a-4fb4-9f67-3a3b47e90f44)
+![Screenshot_2-3-2026_184221_collection compact synology me](https://github.com/user-attachments/assets/489c9b56-10a3-4c3a-9d53-98b670402bc9)
 
 ---
 
@@ -25,6 +31,7 @@ A clean, mobile-friendly single-file web app for browsing your Discogs vinyl (or
 - **Tracklist + runtime** — click any album to expand its track listing
 - **Discogs link** — each card has a ↗ button to open the release on Discogs
 - **Collector Dashboard** — stats for total releases, top artist, formats, and year range
+- **Pull to refresh** — on mobile, pull down from the top of the page to reload your collection
 - **Offline support** — after first load, your collection is cached and the app works without internet
 - **Full pagination** — loads your entire collection, not just the first 50
 - **Tracklist caching** — re-opening an album is instant after first load
@@ -127,6 +134,10 @@ Tap any album card to expand its tracklist with track durations and total runtim
 ### Discogs Link
 
 Each card has a small ↗ icon in the top-right corner. Tap it to open that release directly on Discogs in a new tab.
+
+### Pull to Refresh
+
+On mobile, pull down from the top of the page to reload your collection from Discogs. The indicator shows **↓ Pull to refresh** as you drag and switches to **↑ Release to refresh** once you've pulled far enough. Releasing triggers a full reload — useful if you've recently added records and want to see them without reopening the app.
 
 ---
 
