@@ -12,7 +12,7 @@ Don't use your token on this site. If there's an error, make sure your Discogs c
 
 ## Screenshot
 
-![Screenshot_2-3-2026_184221_collection compact synology me](https://github.com/user-attachments/assets/183b4d3d-849f-4d20-bbb7-93330127665a)
+![Screenshot_2-3-2026_184221_collection compact synology me](https://github.com/user-attachments/assets/ee6704ce-a39a-4fb4-9f67-3a3b47e90f44)
 
 ---
 
@@ -141,6 +141,18 @@ Each card has a small ↗ icon in the top-right corner. Tap it to open that rele
 After loading your collection for the first time, a service worker caches all Discogs API responses. If you open the app without an internet connection it will serve your collection from cache automatically. The cache refreshes whenever you're back online.
 
 > Note: offline support requires the app to be served over HTTPS or `localhost`. It may not work when opening the file directly from disk in all browsers.
+
+---
+
+## Self-Hosting
+
+1. Create a folder on your server (e.g. `discogs-collection/`)
+2. Rename `discogs-collection.html` to `index.html` and place it inside that folder
+3. Point your web server or subdomain at the folder
+
+That's it — there are no other files or dependencies. As long as it's served over HTTPS, offline support will work automatically.
+
+> **Note:** The service worker (offline support) requires HTTPS or `localhost`. It will not work when opening `index.html` directly from disk via `file://`.
 
 ---
 
