@@ -1175,6 +1175,58 @@ self.addEventListener("fetch", e => {
     } catch (e) {}
   })();
 
+  // ── Pull to refresh ───────────────────────────────────────────────
+  (function initPullToRefresh() {
+    let startY = 0, pulling = false, indicator = null;
+    const THRESHOLD = 72;
+
+    function getIndicator() {
+      if (!indicator) {
+        indicator = document.createElement("div");
+        indicator.style.cssText = "position:fixed;top:0;left:0;width:100%;z-index:999;display:flex;align-items:center;justify-content:center;height:0;overflow:hidden;background:#111;color:#555;font-size:0.82rem;font-weight:600;";
+        indicator.textContent = "↓ Pull to refresh";
+        document.body.prepend(indicator);
+      }
+      return indicator;
+    }
+
+    document.addEventListener("touchstart", e => {
+      if (window.scrollY === 0 && e.touches.length === 1) {
+        startY = e.touches[0].clientY;
+        pulling = true;
+      }
+    }, { passive: true });
+
+    document.addEventListener("touchmove", e => {
+      if (!pulling) return;
+      const dist = e.touches[0].clientY - startY;
+      if (dist <= 0) { pulling = false; return; }
+      const el = getIndicator();
+      const capped = Math.min(dist, THRESHOLD * 1.4);
+      el.style.height = capped * 0.5 + "px";
+      el.textContent = dist >= THRESHOLD ? "↑ Release to refresh" : "↓ Pull to refresh";
+      el.style.color = dist >= THRESHOLD ? "#3b82f6" : "#555";
+    }, { passive: true });
+
+    document.addEventListener("touchend", e => {
+      if (!pulling) return;
+      pulling = false;
+      const dist = e.changedTouches[0].clientY - startY;
+      const el = getIndicator();
+      el.style.height = "0";
+      el.style.color = "#555";
+      el.textContent = "↓ Pull to refresh";
+      if (dist >= THRESHOLD) {
+        // Clear cached data and reload
+        globalReleases = [];
+        wantlistReleases = [];
+        currentFilteredReleases = [];
+        document.getElementById("results").innerHTML = "";
+        loadCollection();
+      }
+    }, { passive: true });
+  })();
+
   loadCollection();
 </script>
 </body>
