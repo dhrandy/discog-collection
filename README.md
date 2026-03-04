@@ -47,7 +47,7 @@ Double-click the file, or drag it into any modern browser (Chrome, Safari, Firef
 
 ### 3. Enter your Discogs username
 
-On first launch you'll see a setup screen. Enter your Discogs username (e.g. `dhrandy`) and click **Save**.
+On first launch you'll see a setup screen. Enter your Discogs username and click **Save**.
 
 > Your username is saved to your browser's `localStorage` so you only need to enter it once.
 
