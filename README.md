@@ -8,7 +8,7 @@ A clean, mobile-friendly single-file web app for browsing your Discogs vinyl (or
 
 ## Screenshot
 
-![Screenshot_2-3-2026_184221_collection compact synology me](https://github.com/user-attachments/assets/6e848a73-989c-4e6b-a164-9f554815412a)
+![Screenshot_2-3-2026_184221_collection compact synology me](https://github.com/user-attachments/assets/a761e79e-f4ae-4581-954e-723dacf6f23e)
 
 ---
 
@@ -55,7 +55,14 @@ On first launch you'll see a setup screen. Enter your Discogs username (e.g. `dh
 
 ## API Token (Optional)
 
-An API token is required to load your **wantlist** or a **private collection**:
+The easiest way to use this app is to make your Discogs collection public — no API token needed. To do so:
+
+1. Log in to [discogs.com](https://www.discogs.com)
+2. Go to **Settings → Privacy**
+3. Enable **"Allow others to browse my collection"**
+4. Save your settings
+
+If you prefer to keep your collection private, you can use an API token instead:
 
 1. Log in to [discogs.com](https://www.discogs.com)
 2. Go to **Settings → Developers**
@@ -85,7 +92,7 @@ Search, format pills, and genre filters all work together — for example, tap *
 
 ### Collection vs. Wantlist
 
-Use the tabs at the top to switch between your **Collection** and your **Wantlist**. Both show the same filters and sorting options. The wantlist requires an API token if it's private.
+Use the tabs at the top to switch between your **Collection** and your **Wantlist**. Both show the same filters and sorting options. A token is only needed if your wantlist is private.
 
 ### Grid vs. Shelf View
 
