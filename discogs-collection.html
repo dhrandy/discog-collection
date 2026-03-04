@@ -9,8 +9,8 @@
     body { background: #111; color: #eee; font-family: system-ui, sans-serif; margin: 0; padding: 12px 10px; }
     @media (min-width: 600px) { body { padding: 20px; } }
 
-    .header-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
-    h1 { margin: 0; font-weight: 700; font-size: clamp(1.1rem, 5vw, 1.8rem); flex: 1; min-width: 0; }
+    .header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    h1 { margin: 0; font-weight: 700; font-size: clamp(1.1rem, 5vw, 1.8rem); }
     #logoutBtn { flex-shrink: 0; width: auto; padding: 6px 12px; background: transparent; border: 1px solid #333; border-radius: 6px; color: #777; font-size: 0.78rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
     #logoutBtn:hover { color: #eee; border-color: #555; background: #1a1a1a; }
 
@@ -21,7 +21,7 @@
 
     /* Tabs */
     .tabs { display: flex; gap: 0; margin-bottom: 8px; border-bottom: 1px solid #2a2a2a; }
-    .tab { padding: 8px 16px; background: none; border: none; border-bottom: 2px solid transparent; color: #666; font-size: 0.88rem; font-weight: 600; cursor: pointer; width: auto; margin-bottom: -1px; display: flex; align-items: center; gap: 6px; border-radius: 0; }
+    .tab { padding: 8px 16px 8px 0; background: none; border: none; border-bottom: 2px solid transparent; color: #666; font-size: 0.88rem; font-weight: 600; cursor: pointer; width: auto; margin-bottom: -1px; display: flex; align-items: center; gap: 6px; border-radius: 0; }
     .tab:hover { color: #aaa; }
     .tab.active { color: #3b82f6; border-bottom-color: #3b82f6; }
     .tab-count { background: #222; border-radius: 10px; padding: 1px 7px; font-size: 0.72rem; color: #666; }
@@ -78,6 +78,20 @@
     .stat-icon { font-size: 0.9rem; }
     .stat-main { font-size: 0.85rem; margin-bottom: 3px; word-break: break-word; }
     .stat-sub { font-size: 0.75rem; color: #aaa; word-break: break-word; }
+
+    /* Decade bar */
+    .decade-bar-wrap { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; }
+    .decade-row { display: flex; align-items: center; gap: 6px; font-size: 0.7rem; }
+    .decade-label { width: 32px; color: #666; flex-shrink: 0; text-align: right; }
+    .decade-track { flex: 1; background: #222; border-radius: 2px; height: 6px; overflow: hidden; }
+    .decade-fill { height: 100%; background: #3b82f6; border-radius: 2px; }
+    .decade-count { color: #555; flex-shrink: 0; width: 28px; text-align: right; }
+
+    /* On this day */
+    .otd-card { background: #0f1f0f; border: 1px solid #1a3a1a; border-radius: 6px; padding: 8px 10px; margin-top: 8px; font-size: 0.82rem; display: none; }
+    .otd-header { font-size: 0.75rem; font-weight: 600; color: #4ade80; margin-bottom: 4px; }
+    .otd-item { color: #aaa; padding: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .otd-item strong { color: #eee; }
 
     /* Grid / Shelf toggle */
     #gridToggleBtn { flex-shrink: 0; width: auto; padding: 8px 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: #777; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
@@ -191,7 +205,7 @@
 <body>
 
 <div class="header-row">
-  <h1 id="header">🎶 Discogs Collection</h1>
+  <h1><span style="font-size:0.85em;margin-right:6px;">🎶</span><span id="header">Discogs Collection</span></h1>
   <button id="logoutBtn" style="display:none;" title="Change user or log out">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     Change User
@@ -218,6 +232,11 @@
       <div class="stat-card"><div class="stat-card-header"><span class="stat-icon">🎼</span><span>Artists</span></div><div class="stat-main" id="artistMain">—</div><div class="stat-sub" id="artistSub">—</div></div>
       <div class="stat-card"><div class="stat-card-header"><span class="stat-icon">💿</span><span>Formats</span></div><div class="stat-main" id="formatMain">—</div><div class="stat-sub" id="formatSub">—</div></div>
       <div class="stat-card"><div class="stat-card-header"><span class="stat-icon">🕰</span><span>History</span></div><div class="stat-main" id="historyMain">—</div><div class="stat-sub" id="historySub">—</div></div>
+      <div class="stat-card" style="grid-column:1/-1"><div class="stat-card-header"><span class="stat-icon">📊</span><span>By Decade</span></div><div class="decade-bar-wrap" id="decadeBar"></div></div>
+    </div>
+    <div class="otd-card" id="otdCard">
+      <div class="otd-header" id="otdHeader"></div>
+      <div id="otdList"></div>
     </div>
   </div>
 </div>
@@ -270,6 +289,12 @@
 <div id="setup"></div>
 <div id="loading" class="loading"></div>
 <div id="results" class="grid"></div>
+<div style="text-align:center;margin-top:40px;padding-top:16px;border-top:1px solid #1a1a1a;">
+  <a href="https://github.com/dhrandy/discogs-collection" target="_blank" rel="noopener noreferrer" style="color:#444;font-size:0.75rem;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+    dhrandy/discogs-collection
+  </a>
+</div>
 
 <!-- Random Modal -->
 <div class="modal-overlay" id="randomModal" role="dialog" aria-modal="true">
@@ -351,7 +376,7 @@
     const body = document.getElementById("dashboardBody");
     const toggleText = document.getElementById("dashboardToggleText");
     const stored = localStorage.getItem("discogs_dashboard_collapsed");
-    if (stored === null || stored === "false") { body.style.display = "block"; toggleText.textContent = "Hide"; }
+    if (stored === "false") { body.style.display = "block"; toggleText.textContent = "Hide"; }
     else { body.style.display = "none"; toggleText.textContent = "Show"; }
     document.getElementById("dashboardToggle").addEventListener("click", () => {
       const v = body.style.display === "block";
@@ -383,7 +408,7 @@
     const token = localStorage.getItem("discogs_token");
     if (!username) { showSetup(); return; }
 
-    document.getElementById("header").textContent = "🎶 " + txt(username) + "'s Discogs Collection";
+    document.getElementById("header").textContent = txt(username) + "'s Discogs Collection";
     document.getElementById("logoutBtn").style.display = "flex";
 
     const auth = token ? "?token=" + encodeURIComponent(token) : "";
@@ -430,6 +455,7 @@
     });
 
     initGridToggle();
+    initKeyboardShortcuts();
   }
 
   async function loadWantlist(username, auth) {
@@ -1017,14 +1043,26 @@
 
   // ── Dashboard ─────────────────────────────────────────────────────
   function computeDashboard(releases) {
-    const artistCounts = {}, formatCounts = {};
+    const artistCounts = {}, formatCounts = {}, decadeCounts = {};
     let oldest = Infinity, newest = -Infinity, yearSum = 0, yearCount = 0;
+    const thisYear = new Date().getFullYear();
+    const otdItems = [];
+
     releases.forEach(item => {
       const info = item.basic_information;
       if (info?.artists?.length > 0) { const n = info.artists[0].name; artistCounts[n] = (artistCounts[n] || 0) + 1; }
       info?.formats?.forEach(f => { const n = f.name || "Unknown"; formatCounts[n] = (formatCounts[n] || 0) + 1; });
-      if (info?.year) { const y = Number(info.year); if (!isNaN(y)) { if (y < oldest) oldest = y; if (y > newest) newest = y; yearSum += y; yearCount++; } }
+      if (info?.year) {
+        const y = Number(info.year);
+        if (!isNaN(y)) {
+          if (y < oldest) oldest = y; if (y > newest) newest = y; yearSum += y; yearCount++;
+          const decade = Math.floor(y / 10) * 10;
+          decadeCounts[decade] = (decadeCounts[decade] || 0) + 1;
+          if (y === thisYear) otdItems.push(info);
+        }
+      }
     });
+
     const total = releases.length;
     const uniqueArtists = Object.keys(artistCounts).length;
     const topArtist = Object.entries(artistCounts).sort((a, b) => b[1] - a[1])[0];
@@ -1032,6 +1070,7 @@
     const mainFormat = sortedFormats[0];
     const avgYear = yearCount > 0 ? Math.round(yearSum / yearCount) : null;
     const hasYears = yearCount > 0 && isFinite(oldest);
+
     document.getElementById("collectionMain").textContent = total + " releases";
     document.getElementById("collectionSub").textContent = uniqueArtists + " unique artists";
     if (topArtist) { document.getElementById("artistMain").textContent = topArtist[0] + " (" + topArtist[1] + ")"; document.getElementById("artistSub").textContent = uniqueArtists + " unique artists"; }
@@ -1040,6 +1079,46 @@
     else { document.getElementById("formatMain").textContent = "No data"; document.getElementById("formatSub").textContent = "—"; }
     if (hasYears) { document.getElementById("historyMain").textContent = "Oldest: " + oldest + " · Newest: " + newest; document.getElementById("historySub").textContent = avgYear ? "Average year: " + avgYear : "—"; }
     else { document.getElementById("historyMain").textContent = "No year data"; document.getElementById("historySub").textContent = "—"; }
+
+    // Decade bar
+    const barWrap = document.getElementById("decadeBar");
+    barWrap.innerHTML = "";
+    const decadeEntries = Object.entries(decadeCounts).sort((a, b) => Number(a[0]) - Number(b[0]));
+    const maxCount = Math.max(...decadeEntries.map(([, c]) => c), 1);
+    decadeEntries.forEach(([decade, count]) => {
+      const row = document.createElement("div"); row.className = "decade-row";
+      const label = document.createElement("span"); label.className = "decade-label"; label.textContent = decade + "s";
+      const track = document.createElement("div"); track.className = "decade-track";
+      const fill = document.createElement("div"); fill.className = "decade-fill";
+      fill.style.width = Math.round((count / maxCount) * 100) + "%";
+      track.appendChild(fill);
+      const countEl = document.createElement("span"); countEl.className = "decade-count"; countEl.textContent = count;
+      row.appendChild(label); row.appendChild(track); row.appendChild(countEl);
+      barWrap.appendChild(row);
+    });
+
+    // On this day
+    const otdCard = document.getElementById("otdCard");
+    const otdList = document.getElementById("otdList");
+    const otdHeader = document.getElementById("otdHeader");
+    otdList.innerHTML = "";
+    if (otdItems.length > 0) {
+      otdCard.style.display = "block";
+      otdHeader.textContent = "🌱 From " + thisYear + " in your collection";
+      otdItems.slice(0, 5).forEach(info => {
+        const div = document.createElement("div"); div.className = "otd-item";
+        const artist = info.artists?.[0]?.name || "Unknown";
+        div.innerHTML = "<strong>" + txt(info.title) + "</strong> · " + txt(artist);
+        otdList.appendChild(div);
+      });
+      if (otdItems.length > 5) {
+        const more = document.createElement("div"); more.className = "otd-item";
+        more.style.color = "#555"; more.textContent = "+" + (otdItems.length - 5) + " more";
+        otdList.appendChild(more);
+      }
+    } else {
+      otdCard.style.display = "none";
+    }
   }
 
   // ── Logout ────────────────────────────────────────────────────────
@@ -1174,6 +1253,27 @@ self.addEventListener("fetch", e => {
         .catch(() => {}); // silently fail on file:// restrictions
     } catch (e) {}
   })();
+
+  // ── Keyboard shortcuts ───────────────────────────────────────────
+  function initKeyboardShortcuts() {
+    document.addEventListener("keydown", e => {
+      const tag = document.activeElement?.tagName;
+      const typing = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+
+      // / → focus search
+      if (e.key === "/" && !typing) {
+        e.preventDefault();
+        const input = document.getElementById("searchInput");
+        if (input) { input.focus(); input.select(); }
+      }
+
+      // R → random (not typing, modal not open)
+      if ((e.key === "r" || e.key === "R") && !typing) {
+        const modal = document.getElementById("randomModal");
+        if (!modal?.classList.contains("visible")) openRandomModal();
+      }
+    });
+  }
 
   // ── Pull to refresh ───────────────────────────────────────────────
   (function initPullToRefresh() {
